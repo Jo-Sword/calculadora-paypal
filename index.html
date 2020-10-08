@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paypal Calculator | Improved Webs</title>
+    <link rel="icon" href="/Improved-small.jpg" type="image/png">
+    <style>
+        *{box-sizing: border-box}
+        body{
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            max-width: 1280px;
+            padding: 0;
+            color: #f9f9f9;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #18283b, #040a11)
+        }
+        .top{
+            display: flex;
+            align-items: center;
+            max-width: 90%;
+            margin: 1rem auto;
+            min-height: 12vh
+        }
+        .top > h2{
+            font-size: 2rem;
+            text-align: center;
+            margin: 0
+        }
+        .top > h2 > small{
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            position: relative;
+            top: -.5rem;
+            left: 0
+        }
+
+        main{
+            height: inherit;
+            min-height: 65vh;
+            width: 90%;
+            margin: 1rem auto;
+            padding: 2rem;
+            background-color: #182838db;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between
+        }
+
+        .input{
+            display: flex;
+            position: relative;
+            padding-top: 1rem;
+            margin: 1rem 0
+        }
+        .input > input{
+            width: 100%;
+            padding: .5rem;
+            padding-left: 1rem;
+            font-size: 1.1rem;
+            border: 1px solid transparent;
+            border-right: none;
+            border-radius: 24px 0 0 24px;
+            background-color: #202d41db;
+            color: #f9f9f9;
+            transition: .4s
+        }
+        .input > input[disabled]{background-color: #12202fdb}
+        .input > input[disabled] ~ .prefix{background-color: #12202fdb}
+        .input > input:focus, .input > input:focus ~ .prefix{outline:none;border-color: #2d4154db}
+        .input > .label{
+            position: absolute;
+            top: -.5rem;
+            left: 0;
+            transition: .4s;
+        }
+        .invert{transform: rotate3d(0, 1, 0, 360deg)}
+        .input > .prefix{
+            display: flex;align-items: center;
+            font-size: 1.1rem;
+            padding: .5rem .9rem .5rem .7rem;
+            background: #202d41db;
+            color: #0088f8;
+            border: 1px solid transparent;
+            border-left:none;
+            border-radius: 0 24px 24px 0
+        }
+        .input > .prefix > p{
+            display: block;
+            height: 100%;
+            margin: 0
+        }
+        .input > .help{
+            position: absolute;
+            bottom: -1.2rem;
+            left: 1rem;
+            color: #5b87adbd
+        }
+
+        footer{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 90%;
+            min-height: 10vh;
+            margin: .5rem auto 1rem auto;
+            padding: 1rem;
+            border-radius: 24px;
+
+            text-align: center
+        }
+        footer > p, footer > h3{margin: 0}
+        footer > h3 > a{text-decoration: none;color: #f9f9f9}
+        footer > h3 > a:hover{text-decoration: underline}
+        footer > p{
+            position: relative;
+            top: -1rem;
+            left: 1rem;
+        }
+
+        .msg{
+            background: linear-gradient(to right, #0088f8, #006cec);
+            padding: 1rem;
+            font-size: 1.1rem;
+            border-radius: 24px;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            opacity: .1;
+            transition: .2s opacity;
+        }
+        .msg:hover{opacity: .9}
+        .msg > p{margin: 0}
+
+        @media (max-width: 767.98px) {.msg{display:none}}
+
+        .button{
+            font-size: 1.3rem;
+            padding: .7rem;
+            width: 50%;
+            margin-top: 2rem;
+            margin: 0 auto;
+            background: linear-gradient(to right, #0088f8, #006cec);
+            border-radius: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: .2s transform
+        }
+
+        .button.active{transform: rotate3d(0, 1, 0, 90deg)}
+    </style>
+</head>
+<body>
+    <div class="top">
+        <h2>Calculadora<br><small>Paypal</small></h2>
+    </div>
+    <main>
+        <div class="input">
+            <input type="number" value="100" class="recibe" min="1" max="999999999999998">
+            <div class="recibe label">Para recibir:</div>
+            <div class="prefix"><p>$</p></div>
+        </div>
+        <div class="input">
+            <input type="text" value="100.50" disabled class="recibira">
+            <div class="recibira label">Deben enviarle:</div>
+            <div class="prefix"><p>$</p></div>
+        </div>
+        <div class="input">
+            <input type="text" value="0.50" disabled class="comision">
+            <div class="label">Comisión:</div>
+            <div class="prefix"><p>$</p></div>
+            <div class="help">5% + 0.30$</div>
+        </div>
+        <div class="button">Invertir</div>
+    </main>
+    <footer>
+        <p>Powered by</p>
+        <h3><a href="https://twitter.com/improvedwebs?s=09">Improved Webs</a></h3>
+    </footer>
+    <div class="msg">
+        <p>¡Gracias por usar nuestra aplicación!</p>
+    </div>
+    <script>
+
+        let inverted = false
+        
+        let recibe = 100
+        let recibira
+        let comision
+
+        const recibe_input = document.querySelector('.recibe')
+        const recibira_input = document.querySelector('.recibira')
+        
+        const comision_input = document.querySelector('.comision')
+
+        function setValues() {
+            console.log(typeof recibe)
+            if (!recibe) return
+            if (typeof recibe !== 'number'){
+                recibe = parseFloat(recibe_input.value)
+            }else {
+                recibe = recibe_input.value
+            }
+            if (recibe >= 999999999999999) {
+                recibe = 999999999999999
+            }
+
+            /* Obtener comisión */
+            comision = (5 * recibe / 100) + 0.30
+
+            let possible = comision.toString().split('.')
+            if (possible[1] && possible[1].length > 1) {
+                comision = possible[0] + '.' + possible[1].charAt(0) + possible[1].charAt(1)
+                comision = parseFloat(comision)
+            }
+            
+            if (inverted) {
+                recibira = recibe - comision
+            }else{
+                recibira = recibe + comision
+            }
+
+            recibe_input.value = recibe
+            recibira_input.value = recibira.toString()
+            comision_input.value = comision
+        }
+
+        setValues()
+
+        recibe_input.addEventListener('keyup', (e) => {
+            if (e.key !== 'Enter') {
+                if (typeof recibe !== 'number'){
+                    recibe = parseFloat(recibe_input.value)
+                }else {
+                    recibe = recibe_input.value
+                }
+                setValues()
+            }
+        })
+
+        const invert = document.querySelector('.button')
+        function action_invert(btn=true) {
+            if (btn) {
+                invert.classList.add('active')
+                inverted = inverted ? inverted = false : inverted = true
+            }
+
+            const recibe_label = document.querySelector('.label.recibe')
+            const recibira_label = document.querySelector('.label.recibira')
+            if (btn) {
+                recibe_label.classList.toggle('invert')
+                recibira_label.classList.toggle('invert')
+            }
+
+            if (inverted) {
+                recibe_label.innerText = `Si alguien le envía:`
+
+                recibira_label.innerText = `Usted recibirá:`
+            }else{
+                recibe_label.innerText = `Para recibir:`
+
+                recibira_label.innerText = `Deben enviarle:`
+            }
+
+            setValues()
+
+            if (btn) {
+                setTimeout(() => {
+                    invert.classList.remove('active')
+                }, 250)
+            }
+        }
+        
+        action_invert(false)
+
+        invert.addEventListener('click', () => {
+            action_invert()
+        })
+
+    </script>
+</body>
+</html>
