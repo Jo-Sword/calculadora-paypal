@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paypal Calculator | Improved Webs</title>
-    <link rel="icon" href="/Improved-small.jpg" type="image/png">
+    <link rel="icon" href="./Improved-small.jpg" type="image/jpeg">
     <style>
         *{box-sizing: border-box}
         body{
@@ -86,7 +86,8 @@
             color: #0088f8;
             border: 1px solid transparent;
             border-left:none;
-            border-radius: 0 24px 24px 0
+            border-radius: 0 24px 24px 0;
+            transition: .4s
         }
         .input > .prefix > p{
             display: block;
@@ -198,7 +199,6 @@
         const comision_input = document.querySelector('.comision')
 
         function setValues() {
-            console.log(typeof recibe)
             if (!recibe) return
             if (typeof recibe !== 'number'){
                 recibe = parseFloat(recibe_input.value)
@@ -240,6 +240,15 @@
                 }
                 setValues()
             }
+        })
+
+        recibe_input.addEventListener('change', (e) => {
+            if (typeof recibe !== 'number'){
+                recibe = parseFloat(recibe_input.value)
+            }else {
+                recibe = recibe_input.value
+            }
+            setValues()
         })
 
         const invert = document.querySelector('.button')
