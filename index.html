@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paypal Calculator | Improved Webs</title>
+    <title>Calculadora Paypal | Improved Webs</title>
     <link rel="icon" href="./Improved-small.jpg" type="image/jpeg">
     
     <meta name="description" content="Calcula las comisiones de Paypal en tiempo real.">
-    <meta name="keywords" content="fiera, shop, store, makeup, foundation, lashes, shadows, eyeshadows, beauty">
+    <meta name="keywords" content="calculadora, paypal, comisiones, improved webs">
     
-    <meta name="og:title" content="Paypal Calculator | Improved Webs">
+    <meta name="og:title" content="Calculadora Paypal | Improved Webs">
     <meta name="og:description" content="Calcula las comisiones de Paypal en tiempo real.">
     <meta name="og:url" content="https://jo-sword.github.io/calculadora-paypal">
     <meta name="og:image" content="./Improved-small.jpg">
-    <meta name="og:site_name" content="Paypal Calculator">
+    <meta name="og:site_name" content="Calculadora Paypal">
     <meta name="og:type" content="website">
 
     <meta name="twitter:url" content="https://jo-sword.github.io/calculadora-paypal">
-    <meta name="twitter:title" content="Paypal Calculator | Improved Webs">
+    <meta name="twitter:title" content="Calculadora Paypal | Improved Webs">
     <meta name="twitter:description" content="Calcula las comisiones de Paypal en tiempo real.">
     
     <meta name="twitter:card" content="summary_large_image">
@@ -56,11 +56,28 @@
             left: 0
         }
 
+        .top_commit{
+            width: fit-content;
+            max-width: 90%;
+            background-color: #182838db;
+            border-radius: 24px 24px 0 0;
+            margin: 0 auto;
+            padding: 1rem;
+
+            display:flex
+        }
+
+        .top_commit > .input{
+            padding-top:0;
+        }
+        .top_commit > p{display:flex;align-items:center;font-size:1.2rem}
+
         main{
             height: inherit;
             min-height: 65vh;
             width: 90%;
             margin: 1rem auto;
+            margin-top:0;
             padding: 2rem;
             background-color: #182838db;
             border-radius: 24px;
@@ -68,6 +85,7 @@
             flex-direction: column;
             justify-content: space-between
         }
+        @media (max-width: 767.98px) { main{ border-radius: 0 0 24px 24px;padding-top:0 } }
 
         .input{
             display: flex;
@@ -178,6 +196,17 @@
     <div class="top">
         <h2>Calculadora<br><small>Paypal</small></h2>
     </div>
+    <div class="top_commit">
+        <div class="input _comision">
+            <input type="number" value="5.4" min="-999" max="999">
+            <div class="prefix"><p>%</p></div>
+        </div>
+        <p>+</p>
+        <div class="input tax">
+            <input type="number" value="0.30" min="-999" max="999">
+            <div class="prefix"><p>$</p></div>
+        </div>
+    </div>
     <main>
         <div class="input">
             <input type="number" value="100" class="recibe" min="1" max="999999999999998">
@@ -185,7 +214,7 @@
             <div class="prefix"><p>$</p></div>
         </div>
         <div class="input">
-            <input type="text" value="100.50" disabled class="recibira">
+            <input type="number" value="100.50" disabled class="recibira">
             <div class="recibira label">Deben enviarle:</div>
             <div class="prefix"><p>$</p></div>
         </div>
@@ -193,7 +222,7 @@
             <input type="text" value="0.50" disabled class="comision">
             <div class="label">Comisión:</div>
             <div class="prefix"><p>$</p></div>
-            <div class="help">5% + 0.30$</div>
+            <div class="help"><span class="comision_fixed">5.4</span>% + <span class="tax_fixed">0.30</span>$</div>
         </div>
         <div class="button">Invertir</div>
     </main>
@@ -217,9 +246,60 @@
         
         const comision_input = document.querySelector('.comision')
 
+        // Cambiar comisión y tasa fija.
+
+        let comision_fixed = 5.4
+        let tax_fixed = 0.30
+
+        const comision_fixed_input = document.querySelector('._comision input')
+        const tax_input = document.querySelector('.tax input')
+
+        comision_fixed_input.addEventListener('keyup', (e) => {
+            if (e.key == 'Enter' || e.key == '+' || e.key == '-') return
+            document.querySelector('.comision_fixed').innerText = comision_fixed_input.value
+            if (typeof comision_fixed_input.value !== 'number'){
+                comision_fixed = parseFloat(comision_fixed_input.value)
+            }else{
+                comision_fixed = comision_fixed_input.value
+            }
+            setValues()
+        })
+
+        comision_fixed_input.addEventListener('change', (e) => {
+            document.querySelector('.comision_fixed').innerText = comision_fixed_input.value
+            if (typeof comision_fixed_input.value !== 'number'){
+                comision_fixed = parseFloat(comision_fixed_input.value)
+            }else{
+                comision_fixed = comision_fixed_input.value
+            }
+            setValues()
+        })
+
+        tax_input.addEventListener('keyup', (e) => {
+            if (e.key == 'Enter' || e.key == '+' || e.key == '-') return
+            document.querySelector('.tax_fixed').innerText = tax_input.value
+            if (typeof tax_input.value !== 'number'){
+                tax_fixed = parseFloat(tax_input.value)
+            }else{
+                tax_fixed = tax_input.value
+            }
+            setValues()
+        })
+
+        tax_input.addEventListener('change', (e) => {
+            document.querySelector('.tax_fixed').innerText = tax_input.value
+            if (typeof tax_input.value !== 'number'){
+                tax_fixed = parseFloat(tax_input.value)
+            }else{
+                tax_fixed = tax_input.value
+            }
+            setValues()
+        })
+
+        // Calcular
+
         function setValues() {
-            if (!recibe) return
-            if (typeof recibe !== 'number'){
+            if (typeof recibe_input.value !== 'number'){
                 recibe = parseFloat(recibe_input.value)
             }else {
                 recibe = recibe_input.value
@@ -229,8 +309,8 @@
             }
 
             /* Obtener comisión */
-            comision = (5 * recibe / 100) + 0.30
-
+            comision = (comision_fixed * recibe / 100) + tax_fixed
+            
             let possible = comision.toString().split('.')
             if (possible[1] && possible[1].length > 1) {
                 comision = possible[0] + '.' + possible[1].charAt(0) + possible[1].charAt(1)
@@ -242,23 +322,24 @@
             }else{
                 recibira = recibe + comision
             }
+            console.log(recibe)
+            console.log(recibira)
 
             recibe_input.value = recibe
-            recibira_input.value = recibira.toString()
+            recibira_input.value = recibira
             comision_input.value = comision
         }
 
         setValues()
 
         recibe_input.addEventListener('keyup', (e) => {
-            if (e.key !== 'Enter') {
-                if (typeof recibe !== 'number'){
-                    recibe = parseFloat(recibe_input.value)
-                }else {
-                    recibe = recibe_input.value
-                }
-                setValues()
+            if (e.key === 'Enter' || e.key === '+' || e.key === '-') return
+            if (typeof recibe !== 'number'){
+                recibe = parseFloat(recibe_input.value)
+            }else {
+                recibe = recibe_input.value
             }
+            setValues()
         })
 
         recibe_input.addEventListener('change', (e) => {
@@ -269,6 +350,8 @@
             }
             setValues()
         })
+
+        // Invertir
 
         const invert = document.querySelector('.button')
         function action_invert(btn=true) {
